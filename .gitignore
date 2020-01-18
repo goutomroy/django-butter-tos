@@ -11,4 +11,4 @@
 /static
 /media
 /apps/termsandconditions
-.env
+app.env

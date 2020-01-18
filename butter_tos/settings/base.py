@@ -3,8 +3,8 @@ import os
 
 BASE_DIR = environ.Path(__file__) - 3
 env = environ.Env()
-# reading .env file
-environ.Env.read_env()
+# reading .app.env file
+environ.Env.read_env(env_file=os.path.join(BASE_DIR, 'app.env'))
 
 # False if not in os.environ
 DEBUG = env.bool('DEBUG', default=False)
