@@ -1,0 +1,14 @@
+../venv/
+*.pyc
+*.sqlite3
+*.zip
+/.idea/
+/local/
+/ve/
+.swp
+*.ipynb
+*.log
+/static
+/media
+/apps/termsandconditions
+.env

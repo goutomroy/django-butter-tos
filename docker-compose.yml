@@ -1,0 +1,10 @@
+version: '3.7'
+
+services:
+
+  web:
+    container_name: 'butter_tos_web'
+    build: .
+    restart: on-failure
+    volumes:
+      - .:/code/

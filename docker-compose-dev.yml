@@ -1,0 +1,38 @@
+version: '3.7'
+
+services:
+
+  redis:
+    container_name: 'butter_tos_redis'
+    image: 'redis:latest'
+    restart: on-failure
+    ports:
+      - '127.0.0.1:6379:6379'
+    volumes:
+      - 'redisdata:/data'
+
+  postgres:
+    container_name: 'butter_tos_postgresql'
+    image: postgres:12.1-alpine
+    restart: on-failure
+    volumes:
+      - postgres_data:/var/lib/postgresql/data/
+    environment:
+      - POSTGRES_USER=goutom
+      - POSTGRES_PASSWORD=goutom_butter_tos
+      - POSTGRES_DB=butter_tos
+
+  web:
+    command: sh -c 'python manage.py migrate && python manage.py runserver 0.0.0.0:8000'
+    ports:
+      - 8000:8000
+    env_file:
+      - .env
+    depends_on:
+      - postgres
+      - redis
+
+
+volumes:
+  postgres_data:
+  redisdata:
