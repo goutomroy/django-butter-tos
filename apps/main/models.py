@@ -22,7 +22,6 @@ class UserProfile(models.Model):
 
 @receiver(post_save, sender=User)
 def create_profile(sender, *args, **kwargs):
-    print(f"args: {args} kwargs: {kwargs}")
     if kwargs.get('created', False):
         UserProfile.objects.get_or_create(user=kwargs.get('instance'))
         Token.objects.get_or_create(user=kwargs.get('instance'))

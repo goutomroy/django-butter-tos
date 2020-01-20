@@ -10,6 +10,4 @@
 *.log
 /static
 /media
-/apps/termsandconditions
 app.env
-README_DEV.md

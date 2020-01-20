@@ -8,8 +8,6 @@ router = DefaultRouter()
 router.register(r'terms_of_services', TermsOfServiceViewSet, basename='terms_of_service')
 router.register(r'user_terms_of_services', UserTermsOfServiceViewSet, basename='user_terms_of_service')
 
-# for each in router.urls:
-#     print(each)
 urlpatterns = [
     path('v1/', include(router.urls)),
 ]

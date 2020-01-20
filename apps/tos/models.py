@@ -45,7 +45,7 @@ class UserTermsOfService(models.Model):
 class TermsOfService(models.Model):
 
     slug = models.SlugField(default=DEFAULT_TERMS_SLUG)
-    name = models.TextField(max_length=255)
+    name = models.CharField(max_length=100)
     users = models.ManyToManyField(settings.AUTH_USER_MODEL, through=UserTermsOfService, blank=True)
     version_number = models.DecimalField(default=1.0, decimal_places=2, max_digits=6)
     text = models.TextField(null=True, blank=True)
@@ -63,8 +63,6 @@ class TermsOfService(models.Model):
 
     @staticmethod
     def get_pending_terms(user: settings.AUTH_USER_MODEL):
-        """Finds the latest of a particular terms of services"""
-
         pending_terms = cache.get(f"pending_terms_{user.id}")
         if not pending_terms:
             pending_terms = TermsOfService.objects.filter(

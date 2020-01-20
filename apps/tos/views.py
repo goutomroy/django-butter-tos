@@ -21,11 +21,6 @@ class TermsOfServiceViewSet(viewsets.ModelViewSet):
     serializer_class = TermsOfServiceSerializer
     queryset = TermsOfService.objects.all()
 
-    # {
-    #     'app_name': request.resolver_match.app_name,
-    #     'namespace': request.resolver_match.namespace,
-    #     'url_name': request.resolver_match.url_name
-    # }
     def get_template_names(self):
         app = self.request.resolver_match.app_name
         templates = {
