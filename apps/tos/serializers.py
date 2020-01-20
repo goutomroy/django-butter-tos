@@ -1,6 +1,4 @@
-from django.contrib.auth.models import User
 from rest_framework import serializers
-from apps.main.models import UserProfile
 from apps.tos.models import TermsOfService, UserTermsOfService
 
 
