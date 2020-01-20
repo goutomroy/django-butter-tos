@@ -1,52 +1,43 @@
 #### Description
+Terms of Services handling mechanism implemented in Django.   
 
-* Please do not spend more than 8 hours working on the task. 
-* You should implement as much as you can in the given time frame 
-while keeping the quality of your work high and production-ready. 
-* Please provide all the important info in the Readme file.
-* Your task is to implement the backend (and only backend, no frontend) to allow users 
-to sign the agreement for the Terms of Services. 
-* Store information about when an agreement was signed and what the user data was 
-at that point (first_name, last_name, street, post_code).
-* If any of the user data changes there should be no changes to the agreement. 
-* If the agreement template changes, the agreements already signed should remain unchanged. 
-* There should be an API to fetch the agreement for a user (html) 
-* When coding think of usage scope for this functionality 1 user per minute so try to optimize disc space taken in long run).
+#### Feature
+* Multiple terms of services allowed(via slug field -> version number).  
+* Per user terms of services acceptance.  
+* Keeping user profile data state after accepting terms of services.  
+* Activate tos in future date.
+* Enable/disable tos using status property in admin. 
+* Good admin site to manage terms of services.
+* decorator to use with DRF ModelViewSet action methods(list, retrieve, create, update, delete). 
+If there are any pending tos then it redirects to tos listing page if request is text/html. 
+If request is application/json then it redirects to tos listing json api.  
+* Api for listing all pending tos. if content-type is text/html then renders html page which list all pending tos 
+with a button to accept them, if content-type is application/json then returns list of pending tos. 
+* Api for accepting all pending tos.
+* Configured well for both content-type of text/html and application/json requests.  
+* Enabled redis cache to store user's pending tos which invalidates every 120 seconds.  
+
+#### Screenshot  
+![pending tos list](demo.png)
 
 
-Example agreement template:
+#### requirements.txt
+Developed using Python 3.7.5  
+* asgiref==3.2.3  
+* Django==3.0.2  
+* django-environ==0.4.5  
+* django-filter==2.2.0  
+* django-redis==4.11.0  
+* djangorestframework==3.11.0  
+* psycopg2-binary==2.8.4  
+* pytz==2019.3  
+* redis==3.3.11  
+* sqlparse==0.3.0  
 
-```
-<div style="font-size: 20px; text-align: center;">
-    <p>Some agreement template</p>
-    <p style="font-size: 15px;">
-        {{first_name}} - {{last_name}}
-    </p>
-    <p>
-        {{street}} - {{post_code}}
-    </p>
-    <p style="font-size: 15px;">
-        Dated: {{date}}
-    </p>
-</div>
-```
-
-The requirements are:
-* It should be restful
-* Provide git repository
-* Add basic docker configuration
-* This is part of a bigger (monolith) system
-* Implement in django and django rest framework
-* Please treat this exercise as if you were writing production-quality code that you’d be proud of.
-* Once you are done please push the code into your favourite online repository and share it with us. 
-* We recommend that you commit early and often into your repository.
-* We would expect the exercise to be completed by Tuesday 21st January.
 
 		
 #### Setup  & Run  
-* docker-compose up
 * docker-compose -f docker-compose.yml -f docker-compose-dev.yml up  
-* docker-compose -f docker-compose.yml -f docker-compose-prod.yml up  
 * docker-compose exec web python manage.py createsuperuser 
       
 #### Api Documentation  
@@ -56,6 +47,7 @@ The requirements are:
 
 ####  TODO  
 * Need to write tests extensively.  
+* Write openapi swagger for testing api.  
 		
 
 
