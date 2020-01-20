@@ -35,7 +35,17 @@ Developed using Python 3.7.5
 * sqlparse==0.3.0  
 
 		
-#### Setup  & Run  
+#### Setup & Run  
+* Create and paste `app.env` file to project folder as in manage.py. `app.env` format :  
+
+```editorconfig
+DEBUG=True
+SECRET_KEY=(=fdfs7hp^n=*6jan*%2dfabww1#pud3!9swg&ojq3&uy411
+ALLOWED_HOSTS=localhost,127.0.0.1
+DATABASE_URL=postgresql://user:pass@postgres/butter_tos
+REDIS_URL=rediscache://redis/1
+```
+
 * docker-compose -f docker-compose.yml -f docker-compose-dev.yml up  
 * docker-compose exec web python manage.py createsuperuser 
       
