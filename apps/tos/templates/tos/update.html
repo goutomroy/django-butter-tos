@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+
+<div>
+    <p>Some agreement template
+{{slug}} - {{name}}
+    </p>
+
+    <p>
+        {{request.user.first_name}} - {{request.user.last_name}}
+
+    </p>
+    <p>
+        {{request.user.user_profile.street}} - {{request.user.user_profile.postal_code}}
+    </p>
+    <p>
+        Dated: {{date}}
+    </p>
+</div>
+</body>
+</html>

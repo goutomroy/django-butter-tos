@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Pending Terms</title>
+</head>
+<body>
+
+<div>
+    <div>
+        <h2>Terms of Services</h2>
+        {% if tos_list %}
+        <form action="{% url 'tos:terms_of_service-accept-terms' %}" method="post">
+            {% csrf_token %}
+            {% for tos in tos_list %}
+                <input type="hidden" name="tos-{{ forloop.counter }}" id="tos{{ forloop.counter }}" value="{{ tos.id }}">
+                <h2>{{ tos.name }} - {{ tos.version_number }}</h2>
+                <ul>
+                    <li>Slug : {{ tos.slug }}</li>
+                    <li>Text : {{ tos.text }}</li>
+                    <li>Changed info : {{ tos.info }}</li>
+                </ul>
+            {% endfor %}
+            <input type="submit" value="Accept">
+        </form>
+        {% else %}
+        <h2>No pending tos for now.</h2>
+        {% endif %}
+
+    </div>
+
+
+    <div class="text">
+<pre>
+{{request.user.get_full_name}}
+{{request.user.user_profile.street}} - {{request.user.user_profile.postal_code}}
+Dated: {% now "SHORT_DATETIME_FORMAT" %}
+</pre>
+    </div>
+
+</div>
+</body>
+</html>
