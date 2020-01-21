@@ -8,14 +8,17 @@ Terms of Services handling mechanism implemented in Django.
 * Activate tos in future date.
 * Enable/disable tos using status property in admin. 
 * Good admin site to manage terms of services.
+* Api (`/tos/v1/terms_of_services/pending_terms/`) for listing all pending tos. 
+if content-type is `text/html` then renders html page which lists all pending tos 
+with a button to accept them, if content-type is `application/json` then returns list of pending tos. 
 * Simple decorator to use with DRF ModelViewSet action methods(list, retrieve, create, update, delete). 
-If there are any pending tos then it redirects to tos listing page if request is text/html. 
-If request is application/json then it redirects to tos listing json api.  
-* Api for listing all pending tos. if content-type is text/html then renders html page which list all pending tos 
-with a button to accept them, if content-type is application/json then returns list of pending tos. 
+If there is any pending tos then it sends status code 302, check `location` header for redirection url, 
+for this case its `/tos/v1/terms_of_services/pending_terms/`. Automatic redirection will happen if its enabled in client.
+In browser and postman its enabled by default. You can switch off to get status code 302, its useful when you are 
+requesting from mobile app.  
 * Api for accepting all pending tos.
 * Configured well for both content-type of text/html and application/json requests.  
-* Enabled redis cache to store user's pending tos which invalidates every 120 seconds.  
+* Enabled redis cache to store user's pending tos list which invalidates every 120 seconds.  
 
 #### Screenshot  
 ![pending tos list](demo.png)
@@ -53,8 +56,9 @@ REDIS_URL=rediscache://redis/1
 * Enter to admin site `http://127.0.0.1:8000/api_doc/` and 
 create few terms of services with `activation date` less than now and `status` active.
 * Hit in browser(text/html) `http://127.0.0.1:8000/tos/v1/terms_of_services/pending_terms/`  -  will show page with 
-all pending tos, if you accept then it will redirect you to again pending tos page showing that no more tos to accept.    
-* Hit in postman(application/json) `http://127.0.0.1:8000/tos/v1/terms_of_services/pending_terms/`  -  will show json list of all pending tos.  
+all pending tos, if you accept then it will redirect you again to pending tos page showing that no more tos to accept.    
+* Hit in postman(application/json) `http://127.0.0.1:8000/tos/v1/terms_of_services/pending_terms/`  -  will show 
+json list of all pending tos.  
 * Post api for accepting all tos : `http://127.0.0.1:8000/tos/v1/terms_of_services/accept_terms/`  
 Post data format :  
 ```json
@@ -65,15 +69,15 @@ Post data format :
 ```
 ##### decorator test  
 * I added a ModelViewSet  for testing UserProfile data and used `pending_terms` decorator for retrieve action.
-Hit in browser `http://127.0.0.1:8000/api/v1/user_profile/1/` - will redirect you to pending tos page. Hitting api 
-with application/json will list json of all pending tos. Redirection to original request yet to implement.  
+Hit in browser `http://127.0.0.1:8000/api/v1/user_profile/1/` - will redirect you to pending tos page if there 
+is any pending tos for user. 
+Hitting api with application/json will list json of all pending tos if there is any pending tos for user. 
+Redirection to original request yet to implement.  
 
 
 ####  TODO  
 * Need to write tests extensively.  
 * Write openapi swagger for testing api.  
-* If user make json request and has few tos to accept, now it redirects to pending tos api. 
-Find better way to distinguish response either it requested response or pending tos list.
 * Add redirection to original request after accepting pending tos for text/html request.  
 * Now decorator tested with ModelViewSet action methods but need to test with 
 regular function based views.
