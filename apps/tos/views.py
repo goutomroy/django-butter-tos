@@ -44,7 +44,8 @@ class TermsOfServiceViewSet(viewsets.ModelViewSet):
         terms = TermsOfService.get_pending_terms(request.user)
         if request.accepted_renderer.format == 'html':
             data = {'tos_list': terms}
-            return Response(data)
+            response = Response(data)
+            return response
         else:
             serializer = TermsOfServiceSerializer(terms, many=True)
             return Response(serializer.data)
@@ -59,7 +60,10 @@ class TermsOfServiceViewSet(viewsets.ModelViewSet):
         cache.delete(f"pending_terms_{request.user.id}")
 
         if request.accepted_renderer.format == 'html':
-            return HttpResponseRedirect(reverse('tos:terms_of_service-pending-terms', request=request))
+            if 'next' in request.data:
+                return HttpResponseRedirect(request.data['next'])
+            else:
+                return HttpResponseRedirect(reverse('tos:terms_of_service-pending-terms', request=request))
         else:
             return Response(data={'detail': 'All pending terms accepted.'}, status=status.HTTP_202_ACCEPTED)
 

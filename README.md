@@ -11,11 +11,12 @@ Terms of Services handling mechanism implemented in Django.
 * Api (`/tos/v1/terms_of_services/pending_terms/`) for listing all pending tos. 
 if content-type is `text/html` then renders html page which lists all pending tos 
 with a button to accept them, if content-type is `application/json` then returns list of pending tos. 
-* Simple decorator to use with DRF ModelViewSet action methods(list, retrieve, create, update, delete). 
+* Simple decorator(`@terms_checker`) to use with DRF ModelViewSet action methods(list, retrieve, create, update, delete). 
 If there is any pending tos then it sends status code 302, check `location` header for redirection url, 
 for this case its `/tos/v1/terms_of_services/pending_terms/`. Automatic redirection will happen if its enabled in client.
 In browser and postman its enabled by default. You can switch off to get status code 302, its useful when you are 
-requesting from mobile app.  
+requesting from mobile app. Decorator works with only `safe methods`(get, head, options).
+* Redirection to original request after accepting pending tos for text/html request.
 * Api for accepting all pending tos.
 * Configured well for both content-type of text/html and application/json requests.  
 * Enabled redis cache to store user's pending tos list which invalidates every 120 seconds.  
@@ -77,8 +78,7 @@ Redirection to original request yet to implement.
 
 ####  TODO  
 * Need to write tests extensively.  
-* Write openapi swagger for testing api.  
-* Add redirection to original request after accepting pending tos for text/html request.  
+* Write openapi swagger for testing api.
 * Now decorator tested with ModelViewSet action methods but need to test with 
 regular function based views.
 		

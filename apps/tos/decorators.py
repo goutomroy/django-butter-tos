@@ -1,5 +1,6 @@
 from functools import wraps
 from django.http import HttpResponseRedirect
+from rest_framework.permissions import SAFE_METHODS
 from rest_framework.reverse import reverse
 from .models import TermsOfService
 
@@ -7,11 +8,14 @@ from .models import TermsOfService
 def terms_checker(view_func):
 
     @wraps(view_func)
-    def _wrapped_view(*args, **kwargs):
+    def _wrapped_view(view, request, *args, **kwargs):
 
-        terms = TermsOfService.get_pending_terms(args[1].user)
-        if not terms.exists():
-            return view_func(*args, **kwargs)
+        if request.method in SAFE_METHODS and TermsOfService.get_pending_terms(request.user).exists():
+            reverse_url = reverse('tos:terms_of_service-pending-terms', request=request)
+            if request.accepted_renderer.format == 'html':
+                reverse_url += f"?next={request.get_full_path()}"
+            return HttpResponseRedirect(reverse_url)
 
-        return HttpResponseRedirect(reverse('tos:terms_of_service-pending-terms', request=args[1]))
+        return view_func(view, request, *args, **kwargs)
+
     return _wrapped_view
