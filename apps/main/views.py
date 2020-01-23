@@ -7,13 +7,14 @@ from apps.tos.decorators import terms_checker
 class UserProfileViewSet(viewsets.ModelViewSet):
     serializer_class = UserProfileSerializer
     queryset = UserProfile.objects.all()
-    tos_slugs = ['site-terms']
+
+    def get_queryset(self):
+        return UserProfile.objects.select_related('user').all()
 
     def get_template_names(self):
         app = self.request.resolver_match.app_name
         templates = {
             'list': [f"{app}/list.html", "list.html"],
-            'pending_terms': [f"{app}/pending_terms.html", "pending_terms.html"],
             'retrieve': [f"{app}/retrieve.html", "retrieve.html"],
             'create': [f"{app}/create.html", "create.html"],
             'update': [f"{app}/update.html", "update.html"],

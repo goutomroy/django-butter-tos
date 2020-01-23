@@ -1,11 +1,11 @@
 import logging
-
 from django.core.cache import cache
 from django.http import HttpResponseRedirect
-from rest_framework import viewsets, status
+from rest_framework import viewsets, status, mixins
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework.reverse import reverse
+from rest_framework.viewsets import GenericViewSet
 from apps.tos.models import TermsOfService, UserTermsOfService
 from apps.tos.serializers import TermsOfServiceSerializer, UserTermsOfServiceSerializer
 
@@ -17,20 +17,18 @@ class UserTermsOfServiceViewSet(viewsets.ModelViewSet):
     queryset = UserTermsOfService.objects.all()
 
 
-class TermsOfServiceViewSet(viewsets.ModelViewSet):
+class TermsOfServiceViewSet(mixins.RetrieveModelMixin, mixins.ListModelMixin, GenericViewSet):
+
     serializer_class = TermsOfServiceSerializer
-    queryset = TermsOfService.objects.all()
+
+    def get_queryset(self):
+        return TermsOfService.get_pending_terms(self.request.user)
 
     def get_template_names(self):
         app = self.request.resolver_match.app_name
         templates = {
             'list': [f"{app}/list.html", "list.html"],
-            'pending_terms': [f"{app}/pending_terms.html", "pending_terms.html"],
-            'retrieve': [f"{app}/retrieve.html", "retrieve.html"],
-            'create': [f"{app}/create.html", "create.html"],
-            'update': [f"{app}/update.html", "update.html"],
-            'partial_update': [f"{app}/partial_update.html", "partial_update.html"],
-            'delete': [f"{app}/destroy.html", "destroy.html"],
+            'retrieve': [f"{app}/retrieve.html", "retrieve.html"]
         }
 
         if self.action in templates.keys():
@@ -38,17 +36,6 @@ class TermsOfServiceViewSet(viewsets.ModelViewSet):
         else:
             selected_templates = ['rest_framework/api.html']
         return selected_templates
-
-    @action(detail=False)
-    def pending_terms(self, request):
-        terms = TermsOfService.get_pending_terms(request.user)
-        if request.accepted_renderer.format == 'html':
-            data = {'tos_list': terms}
-            response = Response(data)
-            return response
-        else:
-            serializer = TermsOfServiceSerializer(terms, many=True)
-            return Response(serializer.data)
 
     @action(detail=False, methods=['post'])
     def accept_terms(self, request):
@@ -63,7 +50,7 @@ class TermsOfServiceViewSet(viewsets.ModelViewSet):
             if 'next' in request.data:
                 return HttpResponseRedirect(request.data['next'])
             else:
-                return HttpResponseRedirect(reverse('tos:terms_of_service-pending-terms', request=request))
+                return HttpResponseRedirect(reverse('tos:terms_of_service-list', request=request))
         else:
             return Response(data={'detail': 'All pending terms accepted.'}, status=status.HTTP_202_ACCEPTED)
 
@@ -72,6 +59,7 @@ class TermsOfServiceViewSet(viewsets.ModelViewSet):
             data = {'tos_list': self.get_queryset()}
             return Response(data)
         return super().list(request, *args, **kwargs)
+
 
 
 

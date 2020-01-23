@@ -48,9 +48,8 @@ class TermsOfService(models.Model):
     name = models.CharField(max_length=100)
     users = models.ManyToManyField(settings.AUTH_USER_MODEL, through=UserTermsOfService, blank=True)
     version_number = models.DecimalField(default=1.0, decimal_places=2, max_digits=6)
-    text = models.TextField(null=True, blank=True)
-    info = models.TextField(null=True, blank=True,
-                            help_text=_("Provide users with some info about what's changed and why"))
+    text = models.TextField(help_text=_("Main terms of services text"))
+    info = models.TextField(help_text=_("Provide users with some info about what's changed and why"))
     status = models.BooleanField(default=False)
     activation_date = models.DateTimeField(help_text=_("When this TOS will be active"))
     created = models.DateTimeField(auto_now_add=True, editable=False)
@@ -67,16 +66,15 @@ class TermsOfService(models.Model):
         if not pending_terms:
             pending_terms = TermsOfService.objects.filter(
                 status=True,
-                activation_date__lte=timezone.now()).exclude(
-                user_terms__in=UserTermsOfService.objects.filter(user=user)).order_by('activation_date',
-                                                                                      '-version_number')
+                activation_date__lte=timezone.now()).exclude(user_terms__in=UserTermsOfService.objects.filter(user=user))\
+                .order_by('activation_date', '-version_number')
             if pending_terms.exists():
                 cache.set(f"pending_terms_{user.id}", pending_terms, TERMS_CACHE_SECONDS)
 
         return pending_terms
 
     def get_absolute_url(self):
-        return reverse("tos:tos_view", args=[self.id])
+        return reverse("tos:terms_of_service-detail", args=[self.id])
 
     def __str__(self):
         return f"{self.slug}-{self.version_number}"

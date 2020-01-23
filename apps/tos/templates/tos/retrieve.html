@@ -5,22 +5,12 @@
     <title>Title</title>
 </head>
 <body>
-
-<div>
-    <p>Some agreement template
-{{slug}} - {{name}}
-    </p>
-
-    <p>
-        {{request.user.first_name}} - {{request.user.last_name}}
-
-    </p>
-    <p>
-        {{request.user.user_profile.street}} - {{request.user.user_profile.postal_code}}
-    </p>
-    <p>
-        Dated: {{date}}
-    </p>
-</div>
+    <div class="content">
+        <h2>{{ name }} - {{ version_number }}</h2>
+        <h4>Slug : {{ slug }}</h4>
+        <p>Text : {{ text|safe }}</p>
+        <p>Changed info : {{ info }}</p>
+        <h5>Activation date : {{ activation_date }}</h5>
+    </div>
 </body>
 </html>
