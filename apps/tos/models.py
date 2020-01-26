@@ -64,9 +64,9 @@ class TermsOfService(models.Model):
     def get_pending_terms(user: settings.AUTH_USER_MODEL):
         pending_terms = cache.get(f"pending_terms_{user.id}")
         if not pending_terms:
-            pending_terms = TermsOfService.objects.filter(
-                status=True,
-                activation_date__lte=timezone.now()).exclude(user_terms__in=UserTermsOfService.objects.filter(user=user))\
+            pending_terms = TermsOfService.objects.filter(status=True, activation_date__lte=timezone.now())\
+                .exclude(user_terms__in=UserTermsOfService.objects.filter(user=user))\
+                .defer('created', 'updated')\
                 .order_by('activation_date', '-version_number')
             if pending_terms.exists():
                 cache.set(f"pending_terms_{user.id}", pending_terms, TERMS_CACHE_SECONDS)

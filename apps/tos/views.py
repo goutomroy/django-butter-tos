@@ -1,23 +1,19 @@
-import logging
 from django.core.cache import cache
 from django.http import HttpResponseRedirect
-from rest_framework import viewsets, status, mixins
+from rest_framework import viewsets, status
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework.reverse import reverse
-from rest_framework.viewsets import GenericViewSet
 from apps.tos.models import TermsOfService, UserTermsOfService
 from apps.tos.serializers import TermsOfServiceSerializer, UserTermsOfServiceSerializer
 
-LOGGER = logging.getLogger(name="terms_of_services")
 
-
-class UserTermsOfServiceViewSet(viewsets.ModelViewSet):
+class UserTermsOfServiceViewSet(viewsets.ReadOnlyModelViewSet):
     serializer_class = UserTermsOfServiceSerializer
     queryset = UserTermsOfService.objects.all()
 
 
-class TermsOfServiceViewSet(mixins.RetrieveModelMixin, mixins.ListModelMixin, GenericViewSet):
+class TermsOfServiceViewSet(viewsets.ReadOnlyModelViewSet):
 
     serializer_class = TermsOfServiceSerializer
 
@@ -56,7 +52,9 @@ class TermsOfServiceViewSet(mixins.RetrieveModelMixin, mixins.ListModelMixin, Ge
 
     def list(self, request, *args, **kwargs):
         if request.accepted_renderer.format == 'html':
+            print(f"-----{type(self.get_queryset())}")
             data = {'tos_list': self.get_queryset()}
+            print(f"-----{type(data['tos_list'])}")
             return Response(data)
         return super().list(request, *args, **kwargs)
 

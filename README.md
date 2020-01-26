@@ -19,6 +19,7 @@ for this case its `/tos/v1/terms_of_services/`. Automatic redirection will happe
 In browser and postman its enabled by default. You can switch off to get status code 302, its useful when you are 
 requesting from mobile app. Decorator works with only `safe methods`(get, head, options).
 
+* Apis and decorator works only for authenticated user.
 * Redirection to original request after accepting pending tos for text/html request.
 * Api for accepting all pending tos.
 * Configured well for both content-type of text/html and application/json requests.  

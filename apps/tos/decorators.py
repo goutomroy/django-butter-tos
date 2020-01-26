@@ -19,3 +19,5 @@ def terms_checker(view_func):
         return view_func(view, request, *args, **kwargs)
 
     return _wrapped_view
+
+

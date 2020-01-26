@@ -8,6 +8,4 @@
 .swp
 *.ipynb
 *.log
-/static
-/media
 app.env
