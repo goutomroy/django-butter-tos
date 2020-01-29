@@ -52,9 +52,7 @@ class TermsOfServiceViewSet(viewsets.ReadOnlyModelViewSet):
 
     def list(self, request, *args, **kwargs):
         if request.accepted_renderer.format == 'html':
-            print(f"-----{type(self.get_queryset())}")
             data = {'tos_list': self.get_queryset()}
-            print(f"-----{type(data['tos_list'])}")
             return Response(data)
         return super().list(request, *args, **kwargs)
 
