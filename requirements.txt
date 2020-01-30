@@ -17,8 +17,10 @@ pycodestyle==2.5.0
 Pygments==2.5.2
 python-dateutil==2.8.1
 pytz==2019.3
+raven==6.10.0
 redis==3.3.11
 requests==2.22.0
+sentry-sdk==0.14.1
 six==1.14.0
 sqlparse==0.3.0
 urllib3==1.25.8
