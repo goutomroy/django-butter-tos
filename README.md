@@ -72,13 +72,30 @@ Post data format :
   "tos-2": 8
 }
 ```
-##### decorator test  
-* I added a ModelViewSet  for testing UserProfile data and used `pending_terms` decorator for retrieve action.
+##### Decorator test  
+* I have added a ModelViewSet  for testing UserProfile data and used `pending_terms` decorator for retrieve action.
 Hit in browser `http://127.0.0.1:8000/api/v1/user_profile/1/` - will redirect you to pending tos page if there 
 is any pending tos for user. Hitting api with `application/json` will give `302` with `location` header if there 
 is any pending tos for user.  
 
+##### Decorator use 
 
+```python
+class UserProfileViewSet(viewsets.ModelViewSet):
+
+    @terms_checker
+    def retrieve(self, request, *args, **kwargs):
+        return super().retrieve(request, *args, **kwargs)
+
+    @terms_checker
+    def list(self, request, *args, **kwargs):
+        return super().list(request, *args, **kwargs)
+
+    @terms_checker
+    @action(methods=['get'], detail=False)
+    def email_list(self, request):
+        ...
+```
 ####  TODO  
 * Need to write tests extensively.  
 * Write openapi swagger for testing api.
