@@ -19,6 +19,7 @@ class TermsOfServiceAdmin(admin.ModelAdmin):
 
     list_display = ['id', 'slug', 'name', 'version_number', 'status', 'activation_date']
     search_fields = ['id', 'slug']
+    list_filter = ['slug']
     readonly_fields = ['id', 'created', 'updated']
     list_display_links = ['id', 'slug']
     ordering = ['-activation_date']

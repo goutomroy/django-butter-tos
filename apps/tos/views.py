@@ -1,3 +1,5 @@
+import logging
+
 from django.core.cache import cache
 from django.http import HttpResponseRedirect
 from rest_framework import viewsets, status
@@ -6,6 +8,8 @@ from rest_framework.response import Response
 from rest_framework.reverse import reverse
 from apps.tos.models import TermsOfService, UserTermsOfService
 from apps.tos.serializers import TermsOfServiceSerializer, UserTermsOfServiceSerializer
+
+logger = logging.getLogger(__name__)
 
 
 class UserTermsOfServiceViewSet(viewsets.ReadOnlyModelViewSet):
@@ -52,7 +56,7 @@ class TermsOfServiceViewSet(viewsets.ReadOnlyModelViewSet):
 
     def list(self, request, *args, **kwargs):
         if request.accepted_renderer.format == 'html':
-            data = {'tos_list': self.get_queryset()}
+            data = {'tos_list': list(self.get_queryset())}
             return Response(data)
         return super().list(request, *args, **kwargs)
 

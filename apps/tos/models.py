@@ -7,10 +7,10 @@ from django.utils.translation import gettext_lazy as _
 from django.urls import reverse
 import logging
 
-LOGGER = logging.getLogger(name="terms_and_services")
+logger = logging.getLogger(__name__)
 
 DEFAULT_TERMS_SLUG = "butter-tos"
-TERMS_CACHE_SECONDS = 120
+TERMS_CACHE_SECONDS = 60
 
 
 class UserTermsOfService(models.Model):
@@ -66,11 +66,12 @@ class TermsOfService(models.Model):
         if not pending_terms:
             pending_terms = TermsOfService.objects.filter(status=True, activation_date__lte=timezone.now())\
                 .exclude(user_terms__in=UserTermsOfService.objects.filter(user=user))\
-                .defer('created', 'updated')\
+                .defer('users', 'created', 'updated')\
                 .order_by('activation_date', '-version_number')
             if pending_terms.exists():
+                logger.info(f"pending_terms query : {pending_terms.query}")
                 cache.set(f"pending_terms_{user.id}", pending_terms, TERMS_CACHE_SECONDS)
-
+                logger.info(f"pending_terms_cache : {pending_terms._result_cache} type: {type(pending_terms)}")
         return pending_terms
 
     def get_absolute_url(self):
