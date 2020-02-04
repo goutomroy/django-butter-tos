@@ -35,12 +35,18 @@ class UserProfileViewSet(viewsets.ModelViewSet):
             selected_templates = ['rest_framework/api.html']
         return selected_templates
 
-    @terms_checker
     def retrieve(self, request, *args, **kwargs):
         return super().retrieve(request, *args, **kwargs)
 
-    @terms_checker
+    def get_authenticate_header(self, request):
+        return super().get_authenticate_header(request)
+    # def get_authenticators(self):
+
+    # @terms_checker
     def list(self, request, *args, **kwargs):
+        if request.accepted_renderer.format == 'html':
+            data = {'user_profile_list': list(self.get_queryset())}
+            return Response(data)
         return super().list(request, *args, **kwargs)
 
     @terms_checker

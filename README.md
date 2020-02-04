@@ -8,22 +8,14 @@ Terms of Services handling mechanism implemented in Django.
 * Activate tos in future date.
 * Enable/disable tos using status property in admin. 
 * Good admin site to manage terms of services.
-
-* Api (`/tos/v1/terms_of_services/`) for listing all pending tos. 
-if content-type is `text/html` then renders html page which lists all pending tos 
-with a button to accept them, if content-type is `application/json` then returns list of pending tos. 
-
-* Simple decorator(`@terms_checker`) to use with DRF ModelViewSet action methods(list, retrieve, create, update, delete). 
-If there is any pending tos then it sends status code 302, check `location` header for redirection url, 
-for this case its `/tos/v1/terms_of_services/`. Automatic redirection will happen if its enabled in client.
-In browser and postman its enabled by default. You can switch off to get status code 302, its useful when you are 
-requesting from mobile app. Decorator works with only `safe methods`(get, head, options).
-
-* Apis and decorator works only for authenticated user.
-* Redirection to original request after accepting pending tos for text/html request.
+* Decorator(`@terms_checker`) to enable terms and services to your site.
+* Middleware(`TermsMiddleware`) to enable terms and services to your site.
+* Api (`/tos/v1/terms_of_services/`) for listing all pending tos.
 * Api for accepting all pending tos.
-* Configured well for both content-type of text/html and application/json requests.  
-* Enabled redis cache to store user's pending tos list which invalidates every 120 seconds.  
+* Redirection to original request after accepting pending tos.
+* Works well for both content-type of text/html and application/json requests.  
+* Enabled redis cache to store user's pending tos list which invalidates every `TERMS_CACHE_SECONDS` seconds. 
+ 
 
 #### Screenshot  
 ![pending tos list](demo.png)
@@ -56,15 +48,19 @@ REDIS_URL=rediscache://redis/1
 
 * docker-compose -f docker-compose.yml -f docker-compose-dev.yml up  
 * docker-compose exec web python manage.py createsuperuser 
-      
-#### Test  
-* Enter to admin site `http://127.0.0.1:8000/api_doc/` and 
-create few terms of services with `activation date` less than now and `status` active.
-* Hit in browser(text/html) `http://127.0.0.1:8000/tos/v1/terms_of_services/`  -  will show page with 
-all pending tos, if you accept then it will redirect you again to pending tos page showing that no more tos to accept.    
-* Hit in postman(application/json) `http://127.0.0.1:8000/tos/v1/terms_of_services/pending_terms/`  -  will show 
-json list of all pending tos.  
-* Post api for accepting all tos : `http://127.0.0.1:8000/tos/v1/terms_of_services/accept_terms/`  
+
+#### Settings
+
+* `TERMS_PROTECTED_PATH` - list of path you want to protect from being checked for pending tos. 
+It uses python's `startswith` to exclude requested path. `Default` is []. ['/admin/', '/tos/'] will be added implicitly.
+
+* `DEFAULT_TERMS_SLUG` - default slug to use when creating tos in admin. `Default` is `"butter-tos"`.
+
+* `TERMS_CACHE_SECONDS` - number of seconds to to store user's pending tos. `Default` is `60`.
+
+#### Available apis
+* Api (`/tos/v1/terms_of_services/`) for listing all pending tos.
+* Post api(`/tos/v1/terms_of_services/accept_terms/`) for accepting all tos.
 Post data format :  
 ```json
 {
@@ -72,13 +68,15 @@ Post data format :
   "tos-2": 8
 }
 ```
-##### Decorator test  
-* I have added a ModelViewSet  for testing UserProfile data and used `pending_terms` decorator for retrieve action.
-Hit in browser `http://127.0.0.1:8000/api/v1/user_profile/1/` - will redirect you to pending tos page if there 
-is any pending tos for user. Hitting api with `application/json` will give `302` with `location` header if there 
-is any pending tos for user.  
 
-##### Decorator use 
+
+#### Use of Decorator 
+
+* Use decorator(`@terms_checker`) to any view methods. 
+* Decorator(`@terms_checker`) works only for authenticated user. 
+* Decorator works with only `safe methods`(get, head, options).
+* If there is any pending tos then it sends status code 302, check `location` header for redirection 
+url(`/tos/v1/terms_of_services/?next=/requested_url/?param=any`)
 
 ```python
 class UserProfileViewSet(viewsets.ModelViewSet):
@@ -96,11 +94,38 @@ class UserProfileViewSet(viewsets.ModelViewSet):
     def email_list(self, request):
         ...
 ```
+
+#### Use of Middleware 
+
+* Middleware(`TermsMiddleware`) works only if `django.contrib.auth.middleware.AuthenticationMiddleware` is 
+added in `MIDDLEWARE` 
+* Middleware(`TermsMiddleware`) works with only `safe methods`(get, head, options).
+* If there is any pending tos then it sends status code 302, check `location` header for redirection 
+url(`/tos/v1/terms_of_services/?next=/requested_url/?param=any`)
+* To use Middleware add `apps.tos.middleware.TermsMiddleware` to settings MIDDLEWARE list. It should be added after 
+`django.contrib.auth.middleware.AuthenticationMiddleware` and before `django.middleware.gzip.GZipMiddleware`.  
+
+
+#### Visualize that its working  
+* Enter to admin site `http://127.0.0.1:8000/admin/` and 
+create few terms of services with `activation date` less than now and `status` active.
+* Hit in browser(text/html) `http://127.0.0.1:8000/tos/v1/terms_of_services/`  -  will show page with 
+all pending tos, if you accept then it will redirect you again to pending tos page showing that no more tos to accept.    
+* Hit in postman(application/json) `http://127.0.0.1:8000/tos/v1/terms_of_services/pending_terms/`  -  will show 
+json list of all pending tos.  
+* Post api for accepting all tos : `http://127.0.0.1:8000/tos/v1/terms_of_services/accept_terms/`  
+Post data format :  
+```json
+{
+  "tos-1": 5,
+  "tos-2": 8
+}
+```
+
+
 ####  TODO  
 * Need to write tests extensively.  
 * Write openapi swagger for testing api.
-* Now decorator tested with ModelViewSet action methods but need to test with 
-regular function based views.
 		
 
 

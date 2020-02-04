@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>User profile lis</title>
+</head>
+<body>
+
+
+<div>
+    <h2>User profile list</h2>
+
+    {% if user_profile_list %}
+
+        {% for profile in user_profile_list %}
+        <ul>
+            <h2>{{profile.user.first_name}} {{profile.user.last_name}}</h2>
+            <p>{{profile.street}} - {{profile.postal_code}}</p>
+        </ul>
+        {% endfor %}
+
+    {% else %}
+    <h2>No users for now.</h2>
+    {% endif %}
+
+</div>
+</body>
+</html>

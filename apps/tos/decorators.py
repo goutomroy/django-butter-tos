@@ -1,9 +1,6 @@
 import logging
 from functools import wraps
-from django.http import HttpResponseRedirect
-from rest_framework.permissions import SAFE_METHODS
-from rest_framework.reverse import reverse
-from .models import TermsOfService
+from .utils import redirect_to_terms, is_eligible_to_redirect
 
 logger = logging.getLogger(__name__)
 
@@ -13,10 +10,8 @@ def terms_checker(view_func):
     @wraps(view_func)
     def _wrapped_view(view, request, *args, **kwargs):
 
-        if request.method in SAFE_METHODS and TermsOfService.get_pending_terms(request.user).exists():
-            reverse_url = reverse('tos:terms_of_service-list', request=request)
-            reverse_url += f"?next={request.get_full_path()}"
-            return HttpResponseRedirect(reverse_url)
+        if is_eligible_to_redirect(request):
+            return redirect_to_terms(request)
 
         return view_func(view, request, *args, **kwargs)
 

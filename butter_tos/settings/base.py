@@ -35,7 +35,8 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'django.middleware.gzip.GZipMiddleware'
+    'apps.tos.middleware.TermsMiddleware',
+    'django.middleware.gzip.GZipMiddleware',
 ]
 
 ROOT_URLCONF = 'butter_tos.urls'
@@ -109,3 +110,7 @@ MEDIA_URL = '/media/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
+# TOS setup
+TERMS_PROTECTED_PATH = []
+TERMS_CACHE_SECONDS = 60
+DEFAULT_TERMS_SLUG = "butter-tos"

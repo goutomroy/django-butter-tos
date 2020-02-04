@@ -6,11 +6,9 @@ from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 from django.urls import reverse
 import logging
+from apps.tos.utils import DEFAULT_TERMS_SLUG, TERMS_CACHE_SECONDS
 
 logger = logging.getLogger(__name__)
-
-DEFAULT_TERMS_SLUG = "butter-tos"
-TERMS_CACHE_SECONDS = 60
 
 
 class UserTermsOfService(models.Model):
@@ -69,9 +67,7 @@ class TermsOfService(models.Model):
                 .defer('users', 'created', 'updated')\
                 .order_by('activation_date', '-version_number')
             if pending_terms.exists():
-                logger.info(f"pending_terms query : {pending_terms.query}")
                 cache.set(f"pending_terms_{user.id}", pending_terms, TERMS_CACHE_SECONDS)
-                logger.info(f"pending_terms_cache : {pending_terms._result_cache} type: {type(pending_terms)}")
         return pending_terms
 
     def get_absolute_url(self):
